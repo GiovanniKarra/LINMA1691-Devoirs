@@ -24,24 +24,6 @@ def solve(adj):
     # queue of nodes to process with their associated status (i,False/True) i is the node index and True/False describes if we are appending the node to L or not when processing it
     q = deque()
 
-    """
-    For each vertex u of the graph, mark u as unvisited. Let L be empty.
-    For each vertex u of the graph do Visit(u), where Visit(u) is the recursive subroutine:
-
-        If u is unvisited then:
-            Mark u as visited.
-            For each out-neighbour v of u, do Visit(v).
-            Prepend u to L.
-        Otherwise do nothing.
-
-    For each element u of L in order, do Assign(u,u) where Assign(u,root) is the recursive subroutine:
-
-        If u has not been assigned to a component then:
-            Assign u as belonging to the component whose root is root.
-            For each in-neighbour v of u, do Assign(v,root).
-        Otherwise do nothing.
-    """
-
     ### loop on every node and launch a visit of its descendants
     for x in range(N):
         q.append((x, not visited[x]))
@@ -64,24 +46,32 @@ def solve(adj):
 
     ### find the strongly connected components
     
-    assigned = [-1 for i in range(N)]
+    assigned = [False]*N
+    roots = dict()
 
     for x in L:
-        q.append((x, x, assigned[x] != -1))
+        q.append((x, x, not assigned[x]))
 
         while q:
             x, root, to_assign = q.pop()
 
             if to_assign:
-                assigned[x] = root
+                assigned[x] = True
+
+                if root not in roots:
+                    roots[root] = []
+
+                roots[root].append(x)
 
                 in_neighbours = adj_in[x]
                 for v in in_neighbours:
-                    q.append((v, x, assigned[x] != -1))
+                    q.append((v, x, assigned[x] == -1))
 
+
+    
 
     ### compute answer
-    ans = 0
+    ans = len(roots)
     # TO COMPLETE
 
     return ans
@@ -92,19 +82,20 @@ def solve(adj):
 """
 def transpose(adj):
     n = len(adj)
-    adj_in = []
+    adj_in = [[] for _ in range(n)]
     
     for i in range(n):
-        new_row = adj[i].copy()
-        new_row.reverse()
-        adj_in.append(new_row)
+        for j in range(len(adj[i])):
+            adj_in[j].append(i)
 
     return adj_in
 
 
 if __name__ == "__main__":
-    matrix = [[1, 2, 3],
-              [4, 5, 6],
-              [7, 8, 9]]
+    matrix = [[1, 2],
+              [2],
+              [],
+              [],
+              [0]]
     
-    print(transpose(matrix))
+    print(solve(matrix))
