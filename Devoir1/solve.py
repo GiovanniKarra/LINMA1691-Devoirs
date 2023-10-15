@@ -42,7 +42,7 @@ def solve(adj):
 
     ### reverse the list to obtain the post-order
     L.reverse()
-
+    print(L)
     ### find the strongly connected components
     
     assigned = [False]*N
@@ -109,4 +109,4 @@ if __name__ == "__main__":
               [5],
               [6, 3]]
     
-    print(solve(matrix))
+    solve(matrix)
