@@ -43,7 +43,6 @@ def solve(adj):
     ### reverse the list to obtain the post-order
     L.reverse()
 
-
     ### find the strongly connected components
     
     assigned = [False]*N
@@ -65,15 +64,24 @@ def solve(adj):
 
                 in_neighbours = adj_in[x]
                 for v in in_neighbours:
-                    q.append((v, x, assigned[x] == -1))
+                    q.append((v, x, not assigned[v]))
 
+
+    ans = 0
+    
+    for root in roots:
+        source = True
+        for x in roots[root]:
+            if list(filter(lambda v : v not in roots[root], adj_in[x])):
+                source = False
+                break
+        if source:
+            ans += 1
+
+    print(roots)
+    # print(adj_in)
 
     
-
-    ### compute answer
-    ans = len(roots)
-    # TO COMPLETE
-
     return ans
 
 """
@@ -85,17 +93,20 @@ def transpose(adj):
     adj_in = [[] for _ in range(n)]
     
     for i in range(n):
-        for j in range(len(adj[i])):
+        for j in adj[i]:
             adj_in[j].append(i)
 
     return adj_in
 
 
 if __name__ == "__main__":
-    matrix = [[1, 2],
-              [2],
-              [],
-              [],
-              [0]]
+    matrix = [[1],
+              [2, 4],
+              [3, 6],
+              [2, 7],
+              [0, 5],
+              [6],
+              [5],
+              [6, 3]]
     
     print(solve(matrix))
