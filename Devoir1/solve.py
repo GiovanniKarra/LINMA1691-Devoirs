@@ -25,37 +25,37 @@ def solve(adj):
     q = deque()
 
     ### loop on every node and launch a visit of its descendants
-    # for x in range(N):
-    #     q.append((x, not visited[x]))
-
-    #     while q:
-    #         u,to_append = q.pop()
-
-    #         if to_append:
-    #             visited[u] = True
-
-    #             out_neighbours = adj_out[u]
-    #             for v in out_neighbours:
-    #                 q.append((v, not visited[v]))
-    #             L.append(u)
-
     for x in range(N):
-        if visited[x]:
-            continue
-
-        visited[x] = True
-        q.append(x)
+        q.append((x, not visited[x]))
 
         while q:
-            u = q[0]
-            out_neighbours = adj_out[u]
-            for v in out_neighbours:
-                if not visited[v]:
-                    visited[v] = True
-                    q.append(v)
-                    break
-            #if not list(filter(lambda x : not visited[x], out_neighbours)):
-            L.append(q.popleft())
+            u,to_append = q.popleft()
+
+            if to_append:
+                visited[u] = True
+
+                out_neighbours = adj_out[u]
+                for v in out_neighbours:
+                    q.append((v, not visited[v]))
+                L.append(u)
+
+    # for x in range(N):
+    #     if visited[x]:
+    #         continue
+
+    #     visited[x] = True
+    #     q.append(x)
+
+    #     while q:
+    #         u = q[0]
+    #         out_neighbours = adj_out[u]
+    #         for v in out_neighbours:
+    #             if not visited[v]:
+    #                 visited[v] = True
+    #                 q.append(v)
+    #                 break
+    #         #if not list(filter(lambda x : not visited[x], out_neighbours)):
+    #         L.append(q.popleft())
 
     # def visit(x):
     #     if not visited[x]:
