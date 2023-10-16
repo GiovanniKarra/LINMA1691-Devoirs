@@ -25,24 +25,53 @@ def solve(adj):
     q = deque()
 
     ### loop on every node and launch a visit of its descendants
+    # for x in range(N):
+    #     q.append((x, not visited[x]))
+
+    #     while q:
+    #         u,to_append = q.pop()
+
+    #         if to_append:
+    #             visited[u] = True
+
+    #             out_neighbours = adj_out[u]
+    #             for v in out_neighbours:
+    #                 q.append((v, not visited[v]))
+    #             L.append(u)
+
     for x in range(N):
-        q.append((x, not visited[x]))
+        if visited[x]:
+            continue
+
+        visited[x] = True
+        q.append(x)
 
         while q:
-            x,to_append = q.pop()
+            u = q[0]
+            out_neighbours = adj_out[u]
+            for v in out_neighbours:
+                if not visited[v]:
+                    visited[v] = True
+                    q.append(v)
+                    break
+            #if not list(filter(lambda x : not visited[x], out_neighbours)):
+            L.append(q.popleft())
 
-            if to_append:
-                visited[x] = True
+    # def visit(x):
+    #     if not visited[x]:
+    #         visited[x] = True
+    #         out_neighbours = adj_out[x]
+    #         for v in out_neighbours:
+    #             visit(v)
+    #         L.insert(0, x)
 
-                out_neighbours = adj_out[x]
-                for v in out_neighbours:
-                    q.append((v, not visited[v]))
-                L.append(x)
+    # for x in range(N):
+    #     visit(x)
 
 
     ### reverse the list to obtain the post-order
     L.reverse()
-    print(L)
+    #print(L)
     ### find the strongly connected components
     
     assigned = [False]*N
@@ -52,19 +81,19 @@ def solve(adj):
         q.append((x, x, not assigned[x]))
 
         while q:
-            x, root, to_assign = q.pop()
+            u, root, to_assign = q.pop()
 
             if to_assign:
-                assigned[x] = True
+                assigned[u] = True
 
                 if root not in roots:
                     roots[root] = []
 
-                roots[root].append(x)
+                roots[root].append(u)
 
-                in_neighbours = adj_in[x]
+                in_neighbours = adj_in[u]
                 for v in in_neighbours:
-                    q.append((v, x, not assigned[v]))
+                    q.append((v, u, not assigned[v]))
 
 
     ans = 0
@@ -78,7 +107,7 @@ def solve(adj):
         if source:
             ans += 1
 
-    print(roots)
+    #print(roots)
     # print(adj_in)
 
     
