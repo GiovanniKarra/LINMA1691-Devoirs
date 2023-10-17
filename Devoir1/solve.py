@@ -25,19 +25,19 @@ def solve(adj):
     q = deque()
 
     ### loop on every node and launch a visit of its descendants
-    for x in range(N):
-        q.append(x)
+    # for x in range(N):
+    #     q.append(x)
 
-        while q:
-            u = q.popleft()
+    #     while q:
+    #         u = q.popleft()
 
-            if not visited[u]:
-                visited[u] = True
+    #         if not visited[u]:
+    #             visited[u] = True
 
-                out_neighbours = adj_out[u]
-                for v in out_neighbours:
-                    q.append(v)
-                L.append(u)
+    #             out_neighbours = adj_out[u]
+    #             for v in out_neighbours:
+    #                 q.append(v)
+    #             L.append(u)
 
     # for x in range(N):
     #     if visited[x]:
@@ -68,32 +68,81 @@ def solve(adj):
     # for x in range(N):
     #     visit(x)
 
+    # for x in range(N):
+    #     if visited[x]:
+    #         continue
+    #     visited[x] = True
+    #     q.append(x)
+
+    #     while q:
+    #         u = q.popleft()
+    #         out_neighbours = adj_out[u]
+    #         for v in out_neighbours:
+    #             if not visited[v]:
+    #                 visited[v] = True
+    #                 q.append(v)
+    #         L.append(u)
+
+    for x in range(N):
+        if not visited[x]:
+            q.append(x)
+
+            while q:
+                u = q.popleft()
+                visited[u] = True
+
+                out_neighbours = adj_out[u]
+                for v in out_neighbours:
+                    if not visited[v]:
+                        q.append(v)
+                L.append(u)
+
 
     ### reverse the list to obtain the post-order
-    L.reverse()
-    #print(L)
+    #L.reverse()
+    # print(L)
     ### find the strongly connected components
     
     assigned = [False]*N
     roots = dict()
+    stack = deque()
 
     for x in L:
-        q.append((x, x))
+        if not assigned[x]:
+            stack.append((x, x))
 
-        while q:
-            u, root = q.popleft()
+            while stack:
+                u, root = stack.pop()
 
-            if not assigned[u]:
-                assigned[u] = True
+                if not assigned[u]:
+                    assigned[u] = True
 
-                if root not in roots:
-                    roots[root] = []
+                    if root not in roots:
+                        roots[root] = []
 
-                roots[root].append(u)
+                    roots[root].append(u)
 
-                in_neighbours = adj_in[u]
-                for v in in_neighbours:
-                    q.append((v, u))
+                    in_neighbours = adj_in[u]
+                    for v in in_neighbours:
+                        stack.append((v, root))
+
+    # for x in L:
+    #     q.append((x, x))
+
+    #     while q:
+    #         u, root = q.pop()
+
+    #         if not assigned[u]:
+    #             assigned[u] = True
+
+    #             if root not in roots:
+    #                 roots[root] = []
+
+    #             roots[root].append(u)
+
+    #             in_neighbours = adj_in[u]
+    #             for v in in_neighbours:
+    #                 q.append((v, u))
 
 
     ans = 0
@@ -101,13 +150,13 @@ def solve(adj):
     for root in roots:
         source = True
         for x in roots[root]:
-            if list(filter(lambda v : v not in roots[root], adj_in[x])):
+            if any(v not in roots[root] for v in adj_in[x]):
                 source = False
                 break
         if source:
             ans += 1
 
-    #print(roots)
+    # print(roots)
     # print(adj_in)
 
     
