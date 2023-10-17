@@ -26,17 +26,17 @@ def solve(adj):
 
     ### loop on every node and launch a visit of its descendants
     for x in range(N):
-        q.append((x, not visited[x]))
+        q.append(x)
 
         while q:
-            u,to_append = q.popleft()
+            u = q.popleft()
 
-            if to_append:
+            if not visited[u]:
                 visited[u] = True
 
                 out_neighbours = adj_out[u]
                 for v in out_neighbours:
-                    q.append((v, not visited[v]))
+                    q.append(v)
                 L.append(u)
 
     # for x in range(N):
@@ -78,12 +78,12 @@ def solve(adj):
     roots = dict()
 
     for x in L:
-        q.append((x, x, not assigned[x]))
+        q.append((x, x))
 
         while q:
-            u, root, to_assign = q.pop()
+            u, root = q.popleft()
 
-            if to_assign:
+            if not assigned[u]:
                 assigned[u] = True
 
                 if root not in roots:
@@ -93,7 +93,7 @@ def solve(adj):
 
                 in_neighbours = adj_in[u]
                 for v in in_neighbours:
-                    q.append((v, u, not assigned[v]))
+                    q.append((v, u))
 
 
     ans = 0
