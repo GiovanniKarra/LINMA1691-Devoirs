@@ -19,7 +19,12 @@ def prim_mst(N, roads):
         See homework statement for more details
     """
 
-    #M = len(roads)
+    adj = [set() for _ in range(N)]
+    for road in roads:
+        if road[1] not in adj[road[0]]:
+            adj[road[0]].add((road[2], road[1]))
+            adj[road[1]].add((road[2], road[0]))
+
 
     satisfaction = 0
     
@@ -27,24 +32,26 @@ def prim_mst(N, roads):
     explored_roads = set()
     heap = []
 
-    for road in roads:
-        if 0 in road[:2]:
-            heapq.heappush(heap, (1/road[2], road))
+    for node in adj[0]:
+        heapq.heappush(heap, (node[0], (0, node[1])))
 
     while len(explored_nodes) != N:
         _, min_road = heapq.heappop(heap)
-        other_node = min_road[1] if min_road[0] in explored_nodes else min_road[0]
+        other_node = min_road[1] #if min_road[0] in explored_nodes else min_road[0]
         if other_node in explored_nodes:
             continue
 
         explored_roads.add(min_road)
-        satisfaction += min_road[2]
 
-        for road in roads:
-            if road not in explored_roads and other_node in road[:2]:
-                heapq.heappush(heap, (1/road[2], road))
+        for node in adj[other_node]:
+            if node[1] not in explored_nodes:
+                heapq.heappush(heap, (node[0], (other_node, node[1])))
 
         explored_nodes.add(other_node)
+
+    for road in roads:
+        if road[:2] not in explored_roads:
+            satisfaction += road[2]
 
     return satisfaction
 
