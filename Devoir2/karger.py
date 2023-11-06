@@ -71,7 +71,10 @@ def min_cut(N, edges):
     This method has to return the correct answer with probability bigger than 0.999
     See project homework for more details
     """
-    def karger(nodes, edges):
+
+    uf = Union_Find(N)
+
+    def karger(N, edges):
         """ 
         INPUT : 
             - N the number of nodes
@@ -85,15 +88,35 @@ def min_cut(N, edges):
         
         this_min_cut = -1
         
-        # TO COMPLETE
+        while True:
+            a = random.randint(0, N-1)
+            b = random.randint(0, N-1)
 
-        return this_min_cut 
+            a = uf.find(a)
+            b = uf.find(b)
+
+            if a == b:
+                continue
+
+            if uf.size[a] + uf.size[b] == N:
+                break
+            
+            uf.union(a, b)
+
+        for edge in edges:
+            if a := uf.find(edge[0]) != (b := uf.find(edge[1])):
+                this_min_cut += 1
+
+        return this_min_cut
    
     
     best_min_cut = -1
     
-    # TO COMPLETE (apply karger several times)
-    # Probability to return the true min cut should be at least 0.9999
+    p = (2*math.factorial(N-2))/math.factorial(N)
+    k = math.floor(math.log(0.0001, 1-p))
+
+    for _ in range(k):
+        best_min_cut = (best_min_cut + karger(N, edges))/2
     
     return best_min_cut
     
