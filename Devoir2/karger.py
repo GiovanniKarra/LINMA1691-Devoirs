@@ -72,7 +72,6 @@ def min_cut(N, edges):
     See project homework for more details
     """
 
-    uf = Union_Find(N)
 
     def karger(N, edges):
         """ 
@@ -86,7 +85,8 @@ def min_cut(N, edges):
         See project homework for more details
         """
         
-        this_min_cut = -1
+        uf = Union_Find(N)
+        this_min_cut = 0
         
         while True:
             a = random.randint(0, N-1)
@@ -116,7 +116,9 @@ def min_cut(N, edges):
     k = math.floor(math.log(0.0001, 1-p))
 
     for _ in range(k):
-        best_min_cut = (best_min_cut + karger(N, edges))/2
+        new_best_min_cut = karger(N, edges)
+        if new_best_min_cut < best_min_cut or best_min_cut == -1:
+            best_min_cut = new_best_min_cut
     
     return best_min_cut
     
