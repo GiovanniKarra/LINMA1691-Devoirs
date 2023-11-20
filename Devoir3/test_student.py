@@ -36,3 +36,9 @@ Writes a graph into file_name.
 def save_graph(file_name,graph):
     with open(file_name,'w') as file:
         file.write(from_adj_to_str(graph))
+
+
+if __name__ == "__main__":
+    graphes = []
+    for i in range(1, 8):
+        graphes.append(load_graph(f"test_bench_students/test_0{i}.txt"))
