@@ -1,4 +1,4 @@
-
+from pathfinder_hw import eulerian_path_finder
 
 
 """
@@ -42,3 +42,6 @@ if __name__ == "__main__":
     graphes = []
     for i in range(1, 8):
         graphes.append(load_graph(f"test_bench_students/test_0{i}.txt"))
+
+    for g in graphes:
+        print(eulerian_path_finder(g))
