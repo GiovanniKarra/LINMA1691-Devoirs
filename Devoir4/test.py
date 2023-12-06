@@ -1,4 +1,4 @@
-from solution import *
+from template import *
 
 
 """
