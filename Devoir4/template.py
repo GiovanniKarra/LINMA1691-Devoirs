@@ -1,6 +1,6 @@
 from collections import deque
 
-INF = 99999999999
+INF = float("Inf")
 
 class Edge:
     def __init__(self, u, v, capa, weight, residual=None):
@@ -12,9 +12,32 @@ class Edge:
 
 
 def create_graph(capacities, costs, green_sources: dict, gas_centrals: dict, consumers: dict):
-    s = 0
-    t = 0
-    graph = []
+    N = len(costs)+2
+    
+    s = N-2
+    t = N-1
+    graph = [[] for _ in range(N)]
+
+    for src in green_sources:
+        graph[s].append(Edge(s, src, green_sources[src], 0))
+
+    for src in gas_centrals:
+        var_points = gas_centrals[src]
+
+        for i in range(1, len(var_points)):
+            prev = var_points[i-1]
+            current = var_points[i]
+            dx = current[0]-prev[0]
+            dy = current[1]-prev[1]
+            graph[s].append(Edge(s, src, dx, dy/dx))
+
+    for sink in consumers:
+        graph[sink].append(Edge(sink, t, consumers[sink], 0))
+
+    for i in range(N-2):
+        for j in range(N-2):
+            graph[i].append(Edge(i, j, capacities[i][j], costs[i][j]))
+
     return s, t, graph
 
 
@@ -24,70 +47,59 @@ def get_residual(graph):
 
     for u in range(N):
         for edge in graph[u]:
-            graph_residual[u].append(Edge(edge.u, edge.v, edge.capa, edge.weight))
-            graph_residual[edge.v].append(Edge(edge.v, edge.u, 0, -edge.weight))
-            graph_residual[u][-1].residual = graph_residual[edge.v][-1]
+            edge.residual = Edge(edge.v, edge.u, 0, -edge.weight, edge)
+            graph_residual[u].append(edge)
+            graph_residual[edge.v].append(edge.residual)
 
     return graph_residual
-
-
-def get_path(s, t, parents: list[Edge]):
-    tmp = parents.copy()
-    tmp[s] = 0
-    if None in tmp:
-        return False, INF
-    path = []
-    mincap = INF
-    current = parents[t]
-    while current != None:
-        if current.capa < mincap:
-            mincap = current.capa
-        path.append(current)
-        current = parents[current.u]
-
-    path.reverse()
-    return path, mincap
 
 
 def min_cost_max_flow(s, t, graph_residual: list[list[Edge]]):
 
     N = len(graph_residual)
 
-    # for l in graph_residual:
-    #     for edge in l:
-    #         edge.residual = Edge(edge.u, edge.v, edge.capa, edge.weight)
-
-    def BellmanFord():
-        parents = [None]*N
+    def BellmanFord(parents):
         d = [INF]*N
         d[s] = 0
-        inque = set()
+        
+        inqueue = set()
+
         queue = deque()
         queue.append(s)
-        inque.add(s)
+        inqueue.add(s)
+        
         while queue:
             u = queue.popleft()
-            inque.remove(u)
+            inqueue.remove(u)
             for edge in graph_residual[u]:
-                if edge.weight + d[u] < d[edge.v]:
+                if edge.capa > 0 and edge.weight + d[u] < d[edge.v]:
                     d[edge.v] = edge.weight + d[u]
                     parents[edge.v] = edge
-                    if edge.v not in inque:
-                        inque.add(edge.v)
+                    if edge.v not in inqueue:
                         queue.append(edge.v)
-        return get_path(s, t, parents)
+                        inqueue.add(edge.v)
+
+        return d[t] < INF
 
     maximum_flow = 0
     minimum_cost = 0
+    parents = [None]*N
 
-    path, mincap = BellmanFord()
-    while path and mincap > 0:
-        maximum_flow += mincap
-        for edge in path:
-            minimum_cost += mincap*edge.weight
-            edge.capa -= mincap
-            edge.residual.capa += mincap
-        path, mincap = BellmanFord()
+    while BellmanFord(parents):
+        flow = INF
+        current = t
+        while current != s:
+            flow = min(flow, parents[current].capa)
+            current = parents[current].u
+            
+        maximum_flow += flow
+        
+        current = t
+        while current != s:
+            minimum_cost += flow*parents[current].weight
+            
+            parents[current].capa -= flow
+            parents[current].residual.capa += flow
+            current = parents[current].u
 
-    print(maximum_flow)
     return maximum_flow, minimum_cost
