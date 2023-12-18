@@ -18,6 +18,13 @@ def create_graph(capacities, costs, green_sources: dict, gas_centrals: dict, con
     t = N-1
     graph = [[] for _ in range(N)]
 
+    for sink in consumers:
+        graph[sink].append(Edge(sink, t, consumers[sink], 0))
+
+    for i in range(N-2):
+        for j in range(N-2):
+            graph[i].append(Edge(i, j, capacities[i][j], costs[i][j]))
+
     for src in green_sources:
         graph[s].append(Edge(s, src, green_sources[src], 0))
 
@@ -30,13 +37,6 @@ def create_graph(capacities, costs, green_sources: dict, gas_centrals: dict, con
             dx = current[0]-prev[0]
             dy = current[1]-prev[1]
             graph[s].append(Edge(s, src, dx, dy/dx))
-
-    for sink in consumers:
-        graph[sink].append(Edge(sink, t, consumers[sink], 0))
-
-    for i in range(N-2):
-        for j in range(N-2):
-            graph[i].append(Edge(i, j, capacities[i][j], costs[i][j]))
 
     return s, t, graph
 
