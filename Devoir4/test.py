@@ -78,13 +78,13 @@ assert int(maximum_flow) == 4
 assert int(minimum_cost) == 32
 print("ok3.1")
 
-### Test with flow cancelling on a large example (this takes less than a few seconds with our implementation and a good cpu)
-# K = int(3e3)
-# s,t,graph = create_test_max_flow(2*K+2,K)
-# maximum_flow, minimum_cost = min_cost_max_flow(s, t, get_residual(graph))
+## Test with flow cancelling on a large example (this takes less than a few seconds with our implementation and a good cpu)
+K = int(3e3)
+s,t,graph = create_test_max_flow(2*K+2,K)
+maximum_flow, minimum_cost = min_cost_max_flow(s, t, get_residual(graph))
 
-# assert int(maximum_flow) == 2*K
-# assert int(minimum_cost) == K*1000+K
+assert int(maximum_flow) == 2*K
+assert int(minimum_cost) == K*1000+K
 print("ok3.2")
 
 
